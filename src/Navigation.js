@@ -13,7 +13,7 @@ const Stack=createNativeStackNavigator()
 function MyStack(){
     return(
         <Stack.Navigator initialRouteName="Home">
-                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="Home" component={Home} options={{headerTitle:""}} />
                 <Stack.Screen name="Edit" component={Edit} />
                 <Stack.Screen name="Buscar" component={Buscar}  />
                 <Stack.Screen name="Agregar" component={Agregar}  />

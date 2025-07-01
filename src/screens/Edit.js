@@ -1,4 +1,4 @@
-import { View, Text,StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native'
+import { View,Image, Text,StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native'
 import { MultipleSelectList  } from 'react-native-dropdown-select-list'
 import React from 'react'
 
@@ -20,6 +20,7 @@ export default function Edit({route}) {
 
   const {id}=route.params
   const {nombre}=route.params
+  const {imagenes}=route.params
   const {marca}=route.params
   const {cantidad}=route.params
   const {categoria}=route.params
@@ -32,9 +33,12 @@ export default function Edit({route}) {
       <Text style={styles.titulo}>Editar Producto✒️</Text>
       <View style={{flex:1, textAlign:'center'}}>
           {/* <Text style={{textAlign:'center', fontSize:20}}>{id}</Text> */}
-          <Text style={{fontSize:65, textAlign:'center'}}>
-                  🖱️
-          </Text>
+          <View style={{fontSize:65, textAlign:'center'}}>
+                <Image 
+                                        source={{uri: imagenes.principal}} 
+                                        style={styles.image}
+                                    />
+          </View>
           <TouchableOpacity style={{backgroundColor:'#1268c4', width:90, borderRadius:21, padding:7, margin:'auto', marginBottom:10}}>
              <Text style={{fontSize:24, fontFamily:'arial', fontWeight:'bold', color:'#fff', textAlign:'center'}}>Add+ </Text>
           </TouchableOpacity>
@@ -128,5 +132,10 @@ const styles=StyleSheet.create({
     paddingStart:7,
     borderWidth:1,
     borderRadius:10
+    },
+    image: {
+        width: 260, 
+        height: 200,
+        resizeMode: 'contain'
     }
 })

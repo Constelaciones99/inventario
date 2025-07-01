@@ -1,38 +1,64 @@
 import 'dotenv/config';
-export default{
-  "expo": {
-    "name": "inventary",
-    "slug": "inventary",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+
+export default {
+  expo: {
+    owner: "devcahp",
+    name: "inventary",
+    slug: "inventary",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/icon.png",
+    userInterfaceStyle: "light",
+    newArchEnabled: true,
+    
+    splash: {
+      image: "./assets/splash-icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
+    
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "com.devcahp.inventary" // Recomendado añadir esto
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+    
+    android: {
+      package: "com.devcahp.inventary", // Mejor formato para package name
+      versionCode: 1, // Recomendado añadir
+      icon: "./assets/icon.png",
+      adaptiveIcon: {
+        foregroundImage: "./assets/icon.png",
+        backgroundColor: "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      googleServicesFile: './google-services.json',
+      
+      edgeToEdgeEnabled: true
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    
+    web: {
+      favicon: "./assets/favicon.png"
     },
+    
     extra: {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID
-}
+       // Agrupar config de Firebase
+       apiKey: "AIzaSyAbmB39xaosD2G3zrVBtnOmX70HZ3nlpDA",
+  authDomain: "inventary-74f46.firebaseapp.com",
+  projectId: "inventary-74f46",
+  storageBucket: "inventary-74f46.firebasestorage.app",
+  messagingSenderId: "262404945117",
+  appId: "1:262404945117:web:f71e0e1fa0ae65007d9734"
+      ,
+      eas: {
+        projectId: "b65549f7-b3e7-42f7-9e36-db22b5fb1017"
+      }
+    },
+    
+    // Configuración adicional recomendada
+    plugins: [
+      "@react-native-firebase/app" // Si usas Firebase
+    ],
+    runtimeVersion: {
+      policy: "sdkVersion" // Para updates de Expo
+    }
   }
-}
+};
