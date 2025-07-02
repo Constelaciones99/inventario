@@ -3,6 +3,7 @@ import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { useNavigation } from '@react-navigation/native'
 import { database } from '../config/fb'
 import { collection, addDoc } from 'firebase/firestore'
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import React from 'react'
 
 import InputImage from './../components/InputImage'
@@ -37,15 +38,30 @@ export default function Add() {
         {key: '8', value: 'Red'},
     ]
 
-     const handleImageUpload = (imageUrl) => {
-        setItem(prevItem => ({
-            ...prevItem,
-            imagenes: {
-                ...prevItem.imagenes,
-                principal: imageUrl
-            }
-        }));
-    };
+    const storage = getStorage();
+     
+const handleImageUpload = async (localUri) => {
+  try {
+    // Subir imagen a Firebase Storage
+    const response = await fetch(localUri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `productos/${Date.now()}`);
+    const snapshot = await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    // Actualizar estado con la URL de Firebase
+    setItem(prevItem => ({
+      ...prevItem,
+      imagenes: {
+        ...prevItem.imagenes,
+        principal: downloadURL
+      }
+    }));
+  } catch (error) {
+    console.error("Error al subir imagen:", error);
+    Alert.alert("Error", "No se pudo subir la imagen");
+  }
+};
 
     const guardar = async (e) => {
         
@@ -73,7 +89,7 @@ export default function Add() {
                 <Text style={styles.titulo}>Agregar nuevo producto</Text>
                 
                 <View style={styles.contenidoPrimero}>
-                    <Text style={{ fontSize: 70, textAlign: 'center' }}>📷</Text>
+                    {/* <Text style={{ fontSize: 70, textAlign: 'center' }}>📷</Text> */}
                     <InputImage onImageUpload={handleImageUpload} />
                 </View>
                 
@@ -100,7 +116,7 @@ export default function Add() {
                     setSelected={setSelected} 
                     data={data} 
                     save="value"
-                    onSelect={() => console.log(selected)}
+                    onSelect={() => setItem({...item, categoria:selected})}
                     label="Categories" 
                     boxStyles={styles.selectList}
                     placeholder='Categorias'

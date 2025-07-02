@@ -1,119 +1,122 @@
 // components/InputImage.js
-import React from 'react';
-import { View, TouchableOpacity, Text, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { storage } from '../config/fb';
+import * as MediaLibrary from 'expo-media-library';
+import { useState, useEffect } from 'react';
+import { View, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
-const InputImage = ({ onImageUpload }) => {
-  const [image, setImage] = React.useState(null);
-  const [uploading, setUploading] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
+export default function InputImage({ onImageUpload }) {
+  const [image, setImage] = useState(null);
+  const [status, requestPermission] = MediaLibrary.usePermissions();
 
-  const pickImage = async () => {
-    // Solicitar permisos
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permisos requeridos', 'Necesitamos acceso a tu galería para seleccionar imágenes');
-      return;
-    }
+  useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permiso denegado',
+          'Necesitamos permisos de cámara para tomar fotos.'
+        );
+      }
+    })();
+  }, []);
 
-    // Abrir selector de imágenes
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  const takePhoto = async () => {
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+      });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedImage = result.assets[0];
+        setImage(selectedImage.uri);
+        onImageUpload(selectedImage.uri);
+      }
+    } catch (error) {
+      console.error('Error al tomar foto:', error);
+      Alert.alert('Error', 'No se pudo tomar la foto');
     }
   };
 
-  const uploadImage = async (uri) => {
+  const pickImage = async () => {
     try {
-      setUploading(true);
-      
-      // Convertir la URI a blob
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      
-      // Crear referencia de almacenamiento con nombre único
-      const storageRef = ref(storage, `productos/${Date.now()}`);
-      
-      // Subir el archivo
-      const uploadTask = uploadBytesResumable(storageRef, blob);
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+      });
 
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          // Progreso de la subida
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(progress);
-        },
-        (error) => {
-          // Manejar errores
-          console.error("Error uploading image: ", error);
-          Alert.alert("Error", "No se pudo subir la imagen");
-          setUploading(false);
-        },
-        async () => {
-          // Subida completada - obtener URL
-          try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            setUploading(false);
-            
-            // Llamar a la función de callback con la URL
-            if (onImageUpload) {
-              onImageUpload(downloadURL);
-            }
-          } catch (error) {
-            console.error("Error getting download URL: ", error);
-            setUploading(false);
-          }
-        }
-      );
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedImage = result.assets[0];
+        setImage(selectedImage.uri);
+        onImageUpload(selectedImage.uri);
+      }
     } catch (error) {
-      console.error("Error: ", error);
-      setUploading(false);
+      console.error('Error al seleccionar imagen:', error);
+      Alert.alert('Error', 'No se pudo seleccionar la imagen');
     }
   };
 
   return (
-    <View style={{ alignItems: 'center' }}>
-      <TouchableOpacity 
-        onPress={pickImage}
-        style={{
-          backgroundColor: '#1268c4',
-          padding: 10,
-          borderRadius: 5,
-          marginTop: 10
-        }}
-        disabled={uploading}
-      >
-        <Text style={{ color: 'white', textAlign: 'center' }}>
-          {uploading ? `Subiendo... ${Math.round(progress)}%` : 'Seleccionar Imagen'}
-        </Text>
-      </TouchableOpacity>
-
-      {uploading && <ActivityIndicator style={{ marginTop: 10 }} />}
-
-      {image && !uploading && (
-        <Image
-          source={{ uri: image }}
-          style={{ 
-            width: 150, 
-            height: 150, 
-            marginTop: 15,
-            borderRadius: 5,
-            borderWidth: 1,
-            borderColor: '#ddd'
-          }}
-        />
+    <View style={styles.container}>
+      {image ? (
+        <Image source={{ uri: image }} style={styles.image} />
+      ) : (
+        <View style={styles.placeholder}>
+          <AntDesign name="camera" size={50} color="#888" />
+        </View>
       )}
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={takePhoto}>
+          <Text style={styles.buttonText}>Tomar Foto</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.button} onPress={pickImage}>
+          <Text style={styles.buttonText}>Elegir de Galería</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
-};
+}
 
-export default InputImage;
+const styles = {
+  container: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  placeholder: {
+    width: 150,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  button: {
+    backgroundColor: '#1268c4',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+};

@@ -12,7 +12,8 @@ export default function Product({
     marca,
     cantidad,
     categoria,
-    detalles
+    detalles,
+    observacion
 }) {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = React.useState(false);
@@ -100,7 +101,7 @@ export default function Product({
             
             <RN.TouchableOpacity 
                 style={styles.btn} 
-                onPress={() => navigation.navigate('Edit', {id, nombre, imagenes, marca, cantidad, categoria, detalles})}
+                onPress={() => navigation.navigate('Edit', {id, nombre, imagenes, marca, cantidad, categoria, detalles,observacion})}
             >
                 <RN.Text style={styles.letra}>EDITAR</RN.Text>
             </RN.TouchableOpacity>

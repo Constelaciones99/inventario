@@ -55,10 +55,34 @@ export default {
     
     // Configuración adicional recomendada
     plugins: [
-      "@react-native-firebase/app" // Si usas Firebase
+      "@react-native-firebase/app", // Si usas Firebase
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La app necesita acceso a tus fotos para subir imágenes.",
+          "cameraPermission": "La app necesita acceso a tu cámara para tomar fotos."
+        }
+      ]
     ],
+    
     runtimeVersion: {
       policy: "sdkVersion" // Para updates de Expo
+    },
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "La app necesita acceso a tus fotos para subir imágenes.",
+        "NSCameraUsageDescription": "La app necesita acceso a tu cámara para tomar fotos.",
+        "NSMicrophoneUsageDescription": "La app necesita acceso a tu micrófono cuando grabas videos."
+      }
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
     }
   }
-};
+}
+  
