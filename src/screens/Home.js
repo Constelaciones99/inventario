@@ -57,8 +57,8 @@ export default function Home() {
                     imagenes: doc.data().imagenes,
                     marca: doc.data().marca,
                     cantidad: doc.data().cantidad,
-                    detalles: doc.data().detalle,
-                    categoria: doc.data().categorias,
+                    detalles: doc.data().detalles,
+                    categoria: doc.data().categoria,
                     fecha: doc.data().fecha
                 }))
             );

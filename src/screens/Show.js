@@ -1,80 +1,90 @@
-import { View, Text,StyleSheet, Image } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState } from 'react';
 
-export default function Show({route}) {
+export default function Show({ route }) {
+  const { id, nombre, imagenes, marca, cantidad } = route.params;
+  let { detalles } = route.params;
+  let { categoria } = route.params;
 
-  const {id}=route.params
-  const {nombre}=route.params
-  const {imagenes}=route.params
-  const {marca}=route.params
-  const {cantidad}=route.params
-  const {categoria}=route.params
-  var detalles=route.params.detalles  
-
-
-  if(detalles==""){
-    detalles="Sin detalles por ahora"
+  if (!detalles || detalles.trim() === "") {
+    detalles = "Sin detalles por ahora";
   }
 
   return (
-    <View style={{flex:1}}>
-      <Text style={styles.titulo}> 📜Detalles de Producto</Text>
-      <Text style={styles.word}>{id}</Text>
-      <View style={{fontSize:65, textAlign:'center'}}> 
-            <Image 
-                                    source={{uri: imagenes.principal}} 
-                                    style={styles.image}
-              />  
-      </View>
-      <Text style={styles.word}>{nombre}</Text>
-      <Text style={styles.word}> {marca} </Text> 
-      <Text style={styles.word}> {cantidad} </Text> 
-      <Text style={styles.detail}> Detalles:{detalles} </Text> 
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <Text style={styles.title}>📦 Detalles del Producto</Text>
 
-    </View>
-  )
+      <Image
+        source={{ uri: imagenes?.principal }}
+        style={styles.image}
+      />
+
+      <View style={styles.card}>
+        <Text style={styles.label}>Nombre:</Text>
+        <Text style={styles.value}>{nombre}</Text>
+
+        <Text style={styles.label}>Marca:</Text>
+        <Text style={styles.value}>{marca}</Text>
+
+        <Text style={styles.label}>Cantidad:</Text>
+        <Text style={styles.value}>{cantidad}</Text>
+
+        <Text style={styles.label}>Categoría:</Text>
+        <Text style={styles.value}>{categoria}</Text>
+
+        <Text style={styles.label}>Detalles:</Text>
+        <Text style={styles.details}>{detalles}</Text>
+      </View>
+    </ScrollView>
+  );
 }
 
-
-const styles=StyleSheet.create({
-  titulo:{
-    fontSize:19,
-    width:'100%',
-    textAlign:'center'
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#f4f6f8',
+    flexGrow: 1,
+    alignItems: 'center',
   },
-  word:{
-    fontSize:24,
-    fontFamily:'arial',
-    width:'100%',
-    textAlign:'center',
-    textTransform:'capitalize'
-  },
-  nombre:{
-    
-  },
-  img:{
-    fontSize:80,
-    width:'100%',
-    textAlign:'center'
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#333',
   },
   image: {
-        width: 260, 
-        height: 200,
-        resizeMode: 'contain'
-    },
-  detail:{
-    fontSize:17,
-    width:'100%',
+    width: 260,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
   },
-  badge:{
-    width:'auto',
-    borderRadius:10,
-    fontWeight:'bold',
-    fontFamily:'arial',
-    padding:0,
-    textAlign:'center',
-    fontSize:15,
-    backgroundColor:'#97c0d8',
-    marginBottom:3
-  }
-})
+  card: {
+    backgroundColor: '#fff',
+    padding: 20,
+    width: '100%',
+    borderRadius: 10,
+    elevation: 3, // sombra para Android
+    shadowColor: '#000', // sombra para iOS
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#555',
+    marginTop: 10,
+  },
+  value: {
+    fontSize: 18,
+    color: '#222',
+    textTransform: 'capitalize',
+  },
+  details: {
+    fontSize: 16,
+    color: '#444',
+    marginTop: 5,
+  },
+});
