@@ -27,15 +27,17 @@ export default function Add() {
         }
     })
 
+
     const data = [
         {key: '1', value: 'Externo', disabled: true},
-        {key: '2', value: 'Periferico de entrada'},
-        {key: '3', value: 'Periferico de salida'},
-        {key: '4', value: 'Adaptador'},
-        {key: '5', value: 'Cable'},
+        {key: '2', value: 'periferico de entrada'},
+        {key: '3', value: 'periferico de salida'},
+        {key: '4', value: 'componente externo'},
         {key: '6', value: 'Interno', disabled: true},
-        {key: '7', value: 'Almacenamiento'},
-        {key: '8', value: 'Red'},
+        {key: '5', value: 'componente interno'},
+        {key: '7', value: 'conector'},
+        {key:'8', value:'dispositivo de almacenamiento'},
+        {key: '9', value: 'adaptador'},
     ]
 
     const storage = getStorage();

@@ -5,6 +5,7 @@ export default function Show({ route }) {
   const { id, nombre, imagenes, marca, cantidad } = route.params;
   let { detalles } = route.params;
   let { categoria } = route.params;
+  let {observacion}=route.params
 
   if (!detalles || detalles.trim() === "") {
     detalles = "Sin detalles por ahora";
@@ -34,6 +35,9 @@ export default function Show({ route }) {
 
         <Text style={styles.label}>Detalles:</Text>
         <Text style={styles.details}>{detalles}</Text>
+
+        <Text style={styles.label}>Observacion:</Text>
+        <Text style={styles.details}> {observacion} </Text>
       </View>
     </ScrollView>
   );

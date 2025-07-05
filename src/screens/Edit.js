@@ -3,6 +3,10 @@ import { MultipleSelectList } from 'react-native-dropdown-select-list';
 import React, { useState } from 'react';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { database } from '../config/fb'
+import { collection, addDoc, updateDoc, doc } from 'firebase/firestore'
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import InputImage from '../components/InputImage';
 
 export default function Edit({ route }) {
   const { id, nombre, imagenes, marca, cantidad, categoria, detalles,observacion} = route.params;
@@ -11,9 +15,9 @@ export default function Edit({ route }) {
   const [formData, setFormData] = useState({
     nombre,
     marca,
-    cantidad: cantidad.toString(),
+    cantidad,
     detalles,
-    observaciones: '',
+    observacion: observacion,
     imagen: imagenes.principal
   });
 
@@ -28,34 +32,57 @@ export default function Edit({ route }) {
     { key: '8', value: 'Red' },
   ];
 
-  const handleChangeImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Se necesitan permisos para acceder a la galería');
-      return;
-    }
+  const handleSubmit = async () => {
+  try {
+    const storage = getStorage();
+    let imageUrl = formData.imagen;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+    // Si la imagen fue cambiada localmente (URI local), súbela
+    if (imageUrl && imageUrl.startsWith('file://')) {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const filename = `productos/${Date.now()}_imagen.jpg`;
+      const storageRef = ref(storage, filename);
+      await uploadBytes(storageRef, blob);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+    //productos
+    const productoRef = doc(database, 'prueba', id); // referencia al documento a actualizar
+
+    await updateDoc(productoRef, {
+      nombre: formData.nombre,
+      marca: formData.marca,
+      cantidad: formData.cantidad,
+      categoria: selected,
+      detalles: formData.detalles,
+      observacion: formData.observacion,
+      imagenes: {
+        principal: imageUrl,
+      },
+      fechaActualizacion: new Date(), // opcional, para tracking
     });
 
-    if (!result.canceled) {
-      setFormData({ ...formData, imagen: result.assets[0].uri });
-    }
-  };
+    alert('Producto actualizado correctamente');
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+    alert('Hubo un error al actualizar el producto.');
+  }
+};
+
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {
-    // Aquí iría la lógica para guardar los cambios
-    console.log('Datos actualizados:', formData);
-    alert('Producto actualizado correctamente');
-  };
+  // const handleSubmit = () => {
+  //   // Aquí iría la lógica para guardar los cambios
+
+
+
+
+  //   console.log('Datos actualizados:', formData);
+  //   alert('Producto actualizado correctamente');
+  // };
 
   return (
     <View style={styles.container}>
@@ -66,23 +93,12 @@ export default function Edit({ route }) {
         <Text style={styles.title}>Editar Producto</Text>
         
         {/* Sección de imagen */}
-        <View style={styles.imageSection}>
-          {formData.imagen ? (
-            <Image source={{ uri: formData.imagen }} style={styles.image} />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <MaterialIcons name="photo-camera" size={50} color="#888" />
-            </View>
-          )}
-          
-          <TouchableOpacity 
-            style={styles.changeImageButton} 
-            onPress={handleChangeImage}
-          >
-            <AntDesign name="camera" size={20} color="#fff" />
-            <Text style={styles.changeImageText}>Cambiar imagen</Text>
-          </TouchableOpacity>
-        </View>
+       <InputImage
+            onImageUpload={(uri) =>
+              setFormData((prev) => ({ ...prev, imagen: uri }))
+            }
+          />
+
 
         {/* Campos del formulario */}
         <View style={styles.formGroup}>
@@ -160,8 +176,8 @@ export default function Edit({ route }) {
           style={styles.textArea}
           multiline
           numberOfLines={4}
-          value={formData.observaciones}
-          onChangeText={(text) => handleInputChange('observaciones', text)}
+          value={formData.observacion}
+          onChangeText={(text) => handleInputChange('observacion', text)}
           placeholder="Notas adicionales sobre el producto..."
         />
 

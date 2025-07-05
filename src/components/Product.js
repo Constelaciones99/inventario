@@ -94,7 +94,7 @@ export default function Product({
 
             <RN.TouchableOpacity 
                 style={styles.btn} 
-                onPress={() => navigation.navigate('Show', {id, nombre, imagenes, marca, cantidad, categoria, detalles})}
+                onPress={() => navigation.navigate('Show', {id, nombre, imagenes, marca, cantidad, categoria, detalles, observacion})}
             >
                 <RN.Text style={styles.letra}>VER</RN.Text>
             </RN.TouchableOpacity>
@@ -127,8 +127,9 @@ const styles = RN.StyleSheet.create({
         marginBottom: 10
     },
     nombre: {
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
+        fontFamily:'arial',
         color: '#333',
         textAlign: 'center',
         paddingHorizontal: 30,
@@ -164,7 +165,7 @@ const styles = RN.StyleSheet.create({
     },
     btn: {
         backgroundColor: '#1268c4',
-        width: '90%',
+        width: '100%',
         padding: 10,
         borderRadius: 10,
         marginBottom: 8

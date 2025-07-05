@@ -59,7 +59,8 @@ export default function Home() {
                     cantidad: doc.data().cantidad,
                     detalles: doc.data().detalles,
                     categoria: doc.data().categoria,
-                    fecha: doc.data().fecha
+                    fecha: doc.data().fecha,
+                    observacion:doc.data().observacion
                 }))
             );
         });
@@ -111,16 +112,18 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 2,
+        elevation: 2
     },
     searchIcon: {
-        marginRight: 8
+        marginRight: 12,
+        fontSize:25
     },
     input: {
         flex: 1,
-        fontSize: 14,
+        fontFamily:'arial',
+        fontSize: 23,
         color: '#000',
-        paddingVertical: 8,
+        paddingVertical: 8
     },
     addButton: {
         backgroundColor: '#1268c4',
